@@ -25,6 +25,7 @@ namespace SquishIt.Framework.Css
         private bool processImports = false;
         private const string CssTemplate = "<link rel=\"stylesheet\" type=\"text/css\" {0} href=\"{1}\" />";
         private static readonly Regex importPattern = new Regex(@"@import +url\(([""']){0,1}(.*?)\1{0,1}\);", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private string urlPrefix = "";
         
         public CssBundle()
             : base(new FileWriterFactory(), new FileReaderFactory(), new DebugStatusReader())
@@ -71,6 +72,12 @@ namespace SquishIt.Framework.Css
         ICssBundleBuilder ICssBundle.Add(string cssScriptPath)
         {
             cssFiles.Add(cssScriptPath);
+            return this;
+        }
+
+        ICssBundleBuilder ICssBundleBuilder.UrlPrefix(string urlPrefix)
+        {
+            this.urlPrefix = urlPrefix;
             return this;
         }
 
@@ -189,11 +196,11 @@ namespace SquishIt.Framework.Css
                         string renderedCssTag;
                         if (hashInFileName)
                         {
-                            renderedCssTag = FillTemplate(mediaTag, ExpandAppRelativePath(renderTo));
+                            renderedCssTag = FillTemplate(mediaTag, urlPrefix + ExpandAppRelativePath(renderTo));
                         }
                         else
                         {
-                            string path = ExpandAppRelativePath(renderTo);
+                            string path = urlPrefix + ExpandAppRelativePath(renderTo);
                             if (path.Contains("?"))
                             {
                                 renderedCssTag = String.Format(CssTemplate, mediaTag, path + "&r=" + hash);

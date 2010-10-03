@@ -18,6 +18,7 @@ namespace SquishIt.Framework.JavaScript
         private JavaScriptMinifiers javaScriptMinifier = JavaScriptMinifiers.Ms;
         private const string scriptTemplate = "<script type=\"text/javascript\" src=\"{0}\"></script>";
         private bool renderOnlyIfOutputFileMissing = false;
+        private string urlPrefix = "";
 
         public JavaScriptBundle(): base(new FileWriterFactory(), new FileReaderFactory(), new DebugStatusReader())
         {
@@ -74,6 +75,12 @@ namespace SquishIt.Framework.JavaScript
             {
                 remoteJavaScriptFiles.Add(remoteUri);
             }
+            return this;
+        }
+
+        IJavaScriptBundleBuilder IJavaScriptBundleBuilder.UrlPrefix(string urlPrefix)
+        {
+            this.urlPrefix = urlPrefix;
             return this;
         }
 
@@ -173,18 +180,18 @@ namespace SquishIt.Framework.JavaScript
                         string renderedScriptTag;
                         if (hashInFileName)
                         {
-                            renderedScriptTag = String.Format(scriptTemplate, ExpandAppRelativePath(renderTo));
+                            renderedScriptTag = String.Format(scriptTemplate, urlPrefix + ExpandAppRelativePath(renderTo));
                         }
                         else
                         {
-                            string path = ExpandAppRelativePath(renderTo);
+                            string path = urlPrefix + ExpandAppRelativePath(renderTo);
                             if (path.Contains("?"))
                             {
-                                renderedScriptTag = String.Format(scriptTemplate, ExpandAppRelativePath(renderTo) + "&r=" + hash);    
+                                renderedScriptTag = String.Format(scriptTemplate, path + "&r=" + hash);    
                             }
                             else
                             {
-                                renderedScriptTag = String.Format(scriptTemplate, ExpandAppRelativePath(renderTo) + "?r=" + hash);        
+                                renderedScriptTag = String.Format(scriptTemplate, path + "?r=" + hash);        
                             }
                         }
                         renderedScriptTag = String.Concat(GetFilesForRemote(), renderedScriptTag);
