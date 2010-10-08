@@ -152,11 +152,12 @@ namespace SquishIt.Framework.Css
 
         private string RenderRelease(string key, string renderTo)
         {
-            if (!bundleCache.ContainsKey(key))
+            string cacheKey = urlPrefix + "/" + key;
+            if (!bundleCache.ContainsKey(cacheKey))
             {
                 lock (bundleCache)
                 {
-                    if (!bundleCache.ContainsKey(key))
+                    if (!bundleCache.ContainsKey(cacheKey))
                     {
                         string compressedCss;
                         string hash= null;
@@ -211,11 +212,11 @@ namespace SquishIt.Framework.Css
                             }
                         }
                         renderedCssTag = String.Concat(GetFilesForRemote(), renderedCssTag);
-                        bundleCache.AddToCache(key, renderedCssTag, dependentFiles);
+                        bundleCache.AddToCache(cacheKey, renderedCssTag, dependentFiles);
                     }
                 }
             }
-            return bundleCache.GetContent(key);
+            return bundleCache.GetContent(cacheKey);
         }
 
         private string MapCompressorToIdentifier(CssCompressors compressors)

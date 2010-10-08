@@ -138,11 +138,12 @@ namespace SquishIt.Framework.JavaScript
 
         private string RenderRelease(string key, string renderTo)
         {
-            if (!bundleCache.ContainsKey(key))
+            string cacheKey = urlPrefix + "/" + key;
+            if (!bundleCache.ContainsKey(cacheKey))
             {
                 lock (bundleCache)
                 {
-                    if (!bundleCache.ContainsKey(key))
+                    if (!bundleCache.ContainsKey(cacheKey))
                     {
                         string compressedJavaScript;
                         string hash = null;
@@ -195,11 +196,11 @@ namespace SquishIt.Framework.JavaScript
                             }
                         }
                         renderedScriptTag = String.Concat(GetFilesForRemote(), renderedScriptTag);
-                        bundleCache.AddToCache(key, renderedScriptTag, files);
+                        bundleCache.AddToCache(cacheKey, renderedScriptTag, files);
                     }
                 }
             }
-            return bundleCache.GetContent(key);
+            return bundleCache.GetContent(cacheKey);
         }
 
         private string MapMinifierToIdentifier(JavaScriptMinifiers javaScriptMinifier)
